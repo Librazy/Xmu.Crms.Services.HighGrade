@@ -59,15 +59,22 @@ namespace Xmu.Crms.Services.HighGrade
         public void DeleteSeminarByCourseId(long courseId)
         {
             if (courseId < 0)
+            {
                 throw new ArgumentException();
+            }
 
             var seminars = _db.Seminar.Where(_seminar => _seminar.Course.Id == courseId).ToList();
 
             if (seminars == null)
+            {
                 throw new SeminarNotFoundException();
+            }
 
             for(int i=0;i<=seminars.Count;i++)
-            _db.Seminar.Remove(seminars[i]);
+            {
+                _db.Seminar.Remove(seminars[i]);
+            }
+
             _db.SaveChanges();
         }
 
@@ -88,46 +95,25 @@ namespace Xmu.Crms.Services.HighGrade
         public Seminar GetMySeminarBySeminarId(long seminarId, long userId)
         {
             if (seminarId < 0 || userId < 0)
+            {
                 throw new ArgumentException();
+            }
 
             var seminar = _db.Seminar.SingleOrDefault(_seminar => _seminar.Id == seminarId);
             if (seminar == null)//I add it myself
+            {
                 throw new SeminarNotFoundException();
+            }
 
             var course = seminar.Course;
             if (course == null)
+            {
                 throw new CourseNotFoundException();
+            }
 
             return seminar;
 
         }
-
-
-        /// <summary>
-        /// 获得学生相关的某个讨论课的信息.
-        /// @author CaoXingmei
-        /// </summary>
-        /// 
-        /// 通过学生用户id和讨论课id获得学生某个讨论课的详细信息(包括讨论课信息，教师信息).
-        /// 
-        /// <param name="seminarId">讨论课的id</param>
-        /// <param name="userId">学生的id</param>
-        /// <returns>相应的讨论课的详细信息</returns>
-        /// <exception cref="ArgumentException">格式错误时抛出</exception>
-        /// <exception cref="CourseNotFoundException">该课程不存在时抛出</exception>
-        public Seminar GetSeminarDetailBySeminarId(long seminarId, long userId)
-        {
-            if (seminarId < 0 || userId < 0)
-                throw new ArgumentException();
-
-            var seminar = _db.Seminar.SingleOrDefault(_seminar => _seminar.Id == seminarId);
-            if (seminar == null)
-                throw new SeminarNotFoundException();//ISeminarService里面写的是CourseNotFound
-
-            return seminar;
-
-        }
-
 
         /// <summary>
         /// 用户通过讨论课id获得讨论课的信息.
@@ -143,11 +129,15 @@ namespace Xmu.Crms.Services.HighGrade
         public Seminar GetSeminarBySeminarId(long seminarId)
         {
             if (seminarId < 0)
+            {
                 throw new ArgumentException();
+            }
 
-            var seminar = _db.Seminar.SingleOrDefault(_seminar => _seminar.Id == seminarId);
+            var seminar = _db.Seminar.SingleOrDefault(s => s.Id == seminarId);
             if (seminar == null)//I add it myself
+            {
                 throw new SeminarNotFoundException();
+            }
 
             return seminar;
 
@@ -162,26 +152,25 @@ namespace Xmu.Crms.Services.HighGrade
         /// 用户（老师）通过seminarId修改讨论课的相关信息
         /// 
         /// <param name="seminarId">讨论课的id</param>
-        /// <param name="seminar">讨论课信息</param>
+        /// <param name="updated">讨论课信息</param>
         /// <returns>true(修改成功), false(修改失败)</returns>
         /// <exception cref="ArgumentException">格式错误时抛出</exception>
         /// <exception cref="SeminarNotFoundException">该讨论课不存在时抛出</exception>
-        public void UpdateSeminarBySeminarId(long seminarId, Seminar seminar)
+        public void UpdateSeminarBySeminarId(long seminarId, Seminar updated)
         {
             if (seminarId < 0)
-                throw new ArgumentException();
-            if (seminar == null)
             {
-                throw new SeminarNotFoundException();
+                throw new ArgumentException();
             }
 
             //这个是引用吗
-            var _seminar = _db.Seminar.Single(s => s.Id == seminarId);
+            var seminar = _db.Seminar.Find(seminarId) ?? throw new SeminarNotFoundException();
 
-            if (_seminar == null)
-                throw new SeminarNotFoundException();
-
-            _seminar = seminar;
+            seminar.Description = updated.Description;
+            seminar.StartTime = updated.StartTime;
+            seminar.EndTime = updated.EndTime;
+            seminar.Name = updated.Name;
+            seminar.IsFixed = updated.IsFixed;
             _db.SaveChanges();
 
         }
@@ -204,15 +193,22 @@ namespace Xmu.Crms.Services.HighGrade
         public void DeleteSeminarBySeminarId(long seminarId)
         {
             if (seminarId < 0)
+            {
                 throw new ArgumentException();
+            }
 
             var seminars = _db.Seminar.Where(_seminar => _seminar.Id == seminarId).ToList();
 
             if (seminars == null)
+            {
                 throw new SeminarNotFoundException();
+            }
 
             for (int i = 0; i <= seminars.Count; i++)
+            {
                 _db.Seminar.Remove(seminars[i]);
+            }
+
             _db.SaveChanges();
 
         }
@@ -234,10 +230,15 @@ namespace Xmu.Crms.Services.HighGrade
         public long InsertSeminarByCourseId(long courseId, Seminar seminar)
         {
             if (seminar == null)
+            {
                 throw new SeminarNotFoundException();
+            }
+
             if (courseId < 0)
+            {
                 throw new ArgumentException();
-            
+            }
+
             var course = _db.Course.SingleOrDefault(_course => _course.Id == courseId);
             seminar.Course = course;
 
